@@ -1,0 +1,230 @@
+swagger: '2.0'
+info:
+  title: Servicio de gestión de Agenda de una Universidad
+  version: 1.0.0
+  description: >-
+    Se ofrecen métodos para la gestión de citas para tutorias con los profesores
+    de la universidad
+host: universidad.org
+basePath: /agenda/v1
+tags:
+  - name: Profesores
+    description: Operaciones sobre profesores
+  - name: Tutorias
+    description: Operaciones sobre las tutorías de los profesores
+schemes:
+  - http
+paths:
+  /profesores:
+    post:
+      tags:
+        - Profesores
+      summary: Crear un nuevo profesor
+      description: ''
+      operationId: crearProfesor
+      consumes:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Datos del profesor a crear
+          required: true
+          schema:
+            $ref: '#/definitions/Profesor'
+      responses:
+        '200':
+          description: Operación realizada correctamente
+        '405':
+          description: Datos de entrada incorrectos
+    get:
+      tags:
+        - Profesores
+      summary: Obtener listado de los profesores
+      description: ''
+      operationId: obtenerProfesores
+      responses:
+        '200':
+          description: Operación realizada con éxito
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Profesor'
+  '/profesores/{idProfesor}':
+    parameters:
+      - name: idProfesor
+        in: path
+        description: Identificador de un profesor
+        required: true
+        type: number
+        format: int32
+    get:
+      tags:
+        - Profesores
+      summary: Encontrar un profesor por su número de identificación
+      description: ''
+      operationId: buscarProfesor
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        '200':
+          description: Operación realizada con éxito
+          schema:
+            $ref: '#/definitions/Profesor'
+        '400':
+          description: Identificador de profesor no válido
+        '404':
+          description: Profesor no encontrado
+    delete:
+      tags:
+        - Profesores
+      summary: Borrar un profesor a partir de su identificador
+      description: ''
+      operationId: borrarProfesor
+      responses:
+        '400':
+          description: Identificador de profesor no válido
+        '404':
+          description: Profesor no encontrado
+  '/profesores/{idProfesor}/tutorias':
+    parameters:
+      - name: idProfesor
+        in: path
+        description: Identificador de un profesor
+        required: true
+        type: number
+        format: int32
+    post:
+      tags:
+        - Tutorias
+      summary: Crear una tutoría para un profesor
+      description: ''
+      operationId: crearTutoria
+      consumes:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Datos de la tutoría a crear
+          required: true
+          schema:
+            $ref: '#/definitions/Tutoria'
+      responses:
+        '200':
+          description: Operación realizada con éxito
+        '405':
+          description: Datos de entrada no válidos
+    get:
+      tags:
+        - Tutorias
+      summary: >-
+        Obtener todas las tutorías programadas en la agenda para un profesor o
+        en una fecha determinada
+      description: >-
+        Si no se proporciona una fecha, se obtienen todas las tutorías del
+        profesor en la agenda
+      operationId: obtenerTutorias
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: fecha
+          in: query
+          description: Fecha para la que se quiere obtener la lista de tutorías.
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Operación realizada con éxito
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Tutoria'
+  '/profesores/{idProfesor}/tutorias/{idTutoria}':
+    parameters:
+      - name: idProfesor
+        in: path
+        description: Identificador de un profesor
+        required: true
+        type: number
+        format: int32
+      - name: idTutoria
+        in: path
+        description: Identificador de una tutoría
+        required: true
+        type: string
+    get:
+      tags:
+        - Tutorias
+      summary: Encontrar una tutoría según su identificador
+      description: Devuelve una única tutoría
+      operationId: buscarTutoria
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        '200':
+          description: Operación realizada con éxito
+          schema:
+            $ref: '#/definitions/Tutoria'
+        '400':
+          description: Identificador de tutoría no válido
+        '404':
+          description: Tutoría no encontrada
+    delete:
+      tags:
+        - Tutorias
+      summary: Borrar una tutoría de un profesor
+      description: ''
+      operationId: borrarTutoria
+      responses:
+        '400':
+          description: Identificador de tutoría no válido
+        '404':
+          description: Tutoría no encontrada
+definitions:
+  Profesor:
+    type: object
+    required:
+      - idProfesor
+    properties:
+      idProfesor:
+        type: number
+        format: int32
+        description: Identifcador único de un profesor
+        example: 234
+      nombre:
+        type: string
+        description: Nombre y apellidos del profesor
+        example: Juan Pérez García
+      departamento:
+        type: string
+        description: Nombre del departamento del profesor
+        example: Ciencias de la Computación
+    xml:
+      name: profesor
+  Tutoria:
+    type: object
+    required:
+      - idTutoria
+    properties:
+      idTutoria:
+        type: string
+        description: Identificador de una tutoría
+        example: '05'
+      fecha:
+        type: string
+        description: Día programado para la tutoría
+        example: 20/03/2018
+      hora:
+        type: string
+        description: Hora programada para la tutoría
+        example: '13:00'
+      lugar:
+        type: string
+        description: Lugar donde se realiza la tutoría
+        example: Despacho N314 de la Escuela Politécnica
+    xml:
+      name: tutoria

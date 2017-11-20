@@ -1,0 +1,125 @@
+#%RAML 1.0
+title: Servicio de gestión de Agenda de una Universidad
+description: >-
+  Se ofrecen métodos para la gestión de citas para tutorias con los profesores
+  de la universidad
+version: 1.0.0
+baseUri: universidad.org/agenda/v1
+types:
+  Profesor:
+    properties:
+      departamento:
+        required: false
+        type: string
+      idProfesor: number
+      nombre:
+        required: false
+        type: string
+  Tutoria:
+    properties:
+      fecha:
+        required: false
+        type: string
+      hora:
+        required: false
+        type: string
+      idTutoria: string
+      lugar:
+        required: false
+        type: string
+protocols: http
+/profesores:
+  get:
+    description: ''
+    displayName: obtenerProfesores
+    responses:
+      '200':
+        description: Operación realizada con éxito
+        body:
+          items: Profesor
+          type: array
+  post:
+    description: ''
+    body:
+      type: Profesor
+    displayName: crearProfesor
+    responses:
+      '200':
+        description: Operación realizada correctamente
+      '405':
+        description: Datos de entrada incorrectos
+'/profesores/{idProfesor}':
+  delete:
+    description: ''
+    displayName: borrarProfesor
+    responses:
+      '400':
+        description: Identificador de profesor no válido
+      '404':
+        description: Profesor no encontrado
+  get:
+    description: ''
+    displayName: buscarProfesor
+    responses:
+      '200':
+        description: Operación realizada con éxito
+        body:
+          type: Profesor
+      '400':
+        description: Identificador de profesor no válido
+      '404':
+        description: Profesor no encontrado
+  uriParameters:
+    idProfesor: number
+'/profesores/{idProfesor}/tutorias':
+  get:
+    description: >-
+      Si no se proporciona una fecha, se obtienen todas las tutorías del
+      profesor en la agenda
+    displayName: obtenerTutorias
+    queryParameters:
+      fecha:
+        required: false
+        type: string
+    responses:
+      '200':
+        description: Operación realizada con éxito
+        body:
+          items: Tutoria
+          type: array
+  post:
+    description: ''
+    body:
+      type: Tutoria
+    displayName: crearTutoria
+    responses:
+      '200':
+        description: Operación realizada con éxito
+      '405':
+        description: Datos de entrada no válidos
+  uriParameters:
+    idProfesor: number
+'/profesores/{idProfesor}/tutorias/{idTutoria}':
+  delete:
+    description: ''
+    displayName: borrarTutoria
+    responses:
+      '400':
+        description: Identificador de tutoría no válido
+      '404':
+        description: Tutoría no encontrada
+  get:
+    description: Devuelve una única tutoría
+    displayName: buscarTutoria
+    responses:
+      '200':
+        description: Operación realizada con éxito
+        body:
+          type: Tutoria
+      '400':
+        description: Identificador de tutoría no válido
+      '404':
+        description: Tutoría no encontrada
+  uriParameters:
+    idProfesor: number
+    idTutoria: string
